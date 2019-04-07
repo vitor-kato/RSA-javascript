@@ -62,6 +62,7 @@
 // JSBN Library to for using big integers and its functions
 const BigInteger = require('jsbn').BigInteger
 const SecureRandom = require('jsbn').SecureRandom
+const bytesCounter = require('bytes-counter')
 const DEBUG = 0
 
 let str = 'The information security is of significant importance to ensure the privacy of communications'
@@ -115,6 +116,16 @@ function unpack(str) {
 function bin2String(array) {
   return String.fromCharCode.apply(String, array)
 }
+//Chunks arrays
+function chunk(array, size) {
+  const chunked_arr = []
+  let index = 0
+  while (index < array.length) {
+    chunked_arr.push(array.slice(index, size + index))
+    index += size
+  }
+  return chunked_arr
+}
 
 
 export default {
@@ -134,7 +145,7 @@ export default {
       message: str,
       bits: k,
       mEncode: '',
-      mDecode: null,
+      mDecode: '',
       publicKey: null,
       privateKey: null,
       p: null,
@@ -148,11 +159,30 @@ export default {
   //Here is where the magic happens -Encode -Decode
   methods: {
   	encode () {
-      this.mEncode = new BigInteger(unpack(this.message)).modPow(e, n).toString()
+      this.mEncode = '' //Clears on new execution
+      this.mDecode = ''
+
+      //Checks if the message wont break the encoding or decoding bytes size
+      if (this.bits === 512 && bytesCounter.count(this.message) >= 64) {
+        let temp = unpack(this.message)
+        temp = chunk(temp, 64) //Chunks
+        temp.forEach(arr => {
+          let string = new BigInteger(arr).modPow(e, n).toString() + '\n'
+          this.mEncode += string
+        })
+      } else {
+        this.mEncode = new BigInteger(unpack(this.message)).modPow(e, n).toString()
+      }
     },
     decode () {
-    	let temp = new BigInteger(this.mEncode).modPow(d, n).toByteArray()
-    	this.mDecode = bin2String(temp)
+      let temp = this.mEncode.split('\n')
+
+      if (temp.length > 1) { temp.pop() } // Removes unwanted newline char
+
+      temp.forEach(arr => {
+        let string = new BigInteger(arr).modPow(d, n).toByteArray()
+        this.mDecode += bin2String(string)
+      })
     },
     gen () {
       //Generates new keys
