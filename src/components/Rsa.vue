@@ -63,6 +63,7 @@
 const BigInteger = require('jsbn').BigInteger
 const SecureRandom = require('jsbn').SecureRandom
 const bytesCounter = require('bytes-counter')
+
 const DEBUG = 0
 
 let str = 'The information security is of significant importance to ensure the privacy of communications'
@@ -86,11 +87,11 @@ if (DEBUG) {
   e = new BigInteger('5')
 }
 
-// BigInteger(int bitLength, int isPrime?, Random rnd)
 function genKeys(k) {
   // Loops until prime is found
   do {
     p = new BigInteger(k/2, 100, r)
+    // less-expensive test (p mod e) !== 1 since e is odd prime
   } while (!p.isProbablePrime() && p.mod(e) !== 1)
   do {
     q = new BigInteger(k - k / 2, 100, r)
@@ -163,6 +164,7 @@ export default {
       this.mDecode = ''
 
       //Checks if the message wont break the encoding or decoding bytes size
+      //This is only for proofing and need some refactoring
       if (this.bits === 512 && bytesCounter.count(this.message) >= 64) {
         let temp = unpack(this.message)
         temp = chunk(temp, 64) //Chunks
