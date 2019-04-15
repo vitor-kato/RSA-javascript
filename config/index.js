@@ -50,7 +50,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/RSA-javascript',
+    assetsPublicPath: '/', // RSA-javascript for GHPAGES
 
     /**
      * Source Maps
