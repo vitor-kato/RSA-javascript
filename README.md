@@ -7,6 +7,7 @@ Navigate to `src/components/Rsa.vue` for the actual code.
 ## Deploying
 
 Docker:
+`docker load -i RSA-JS.tar`
 `docker-compose up -d`
 
 or
