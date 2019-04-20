@@ -90,6 +90,7 @@ if (DEBUG) {
 function genKeys(k) {
   // Loops until prime is found
   do {
+    // BigInteger(int bitLength, int isPrime?, Random rnd)
     p = new BigInteger(k/2, 100, r)
     // less-expensive test (p mod e) !== 1 since e is odd prime
   } while (!p.isProbablePrime() && p.mod(e) !== 1)
